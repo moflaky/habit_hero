@@ -1,36 +1,194 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Habit Hero 🎯
+
+A modern, full-stack habit tracking application built with Next.js, TypeScript, PostgreSQL, and Prisma.
+
+## Features
+
+- ✅ Create, update, and delete habits
+- 📅 Mark habits as complete for specific dates
+- 📊 View weekly habit completion grid
+- 🔥 Track current streaks
+- 📈 Monitor success rates and statistics
+- 🎨 Beautiful, responsive UI with Tailwind CSS
+
+## Tech Stack
+
+- **Frontend**: Next.js 14+ with App Router, TypeScript, Tailwind CSS
+- **Backend**: Next.js API Routes, Server Actions
+- **Database**: PostgreSQL with Prisma ORM
+- **Icons**: Lucide React
+- **Styling**: Tailwind CSS + clsx for conditional classes
+- **Date Handling**: date-fns
+
+## Project Structure
+
+```
+src/
+├── app/
+│   ├── api/
+│   │   ├── habits/          # Habit CRUD operations
+│   │   └── users/           # User management
+│   └── page.tsx             # Main application page
+├── components/
+│   ├── CreateHabitForm.tsx  # Form for creating new habits
+│   └── HabitCard.tsx        # Individual habit display component
+├── lib/
+│   ├── prisma.ts           # Prisma client configuration
+│   └── utils.ts            # Utility functions
+└── types/
+    └── index.ts            # TypeScript type definitions
+
+prisma/
+├── schema.prisma           # Database schema
+└── seed/
+    └── seed.ts            # Database seeding script
+```
+
+## Database Schema
+
+### User
+- `id` (String, Primary Key)
+- `name` (String)
+- `email` (String, Unique)
+- `createdAt` (DateTime)
+- `updatedAt` (DateTime)
+
+### Habit
+- `id` (String, Primary Key)
+- `title` (String)
+- `description` (String, Optional)
+- `userId` (String, Foreign Key)
+- `createdAt` (DateTime)
+- `updatedAt` (DateTime)
+
+### HabitCompletion
+- `id` (String, Primary Key)
+- `habitId` (String, Foreign Key)
+- `userId` (String, Foreign Key)
+- `date` (Date)
+- `createdAt` (DateTime)
+- Unique constraint: one completion per habit per day per user
+
+## API Routes
+
+### Habits
+- `GET /api/habits?userId={id}` - Get all habits for a user
+- `POST /api/habits` - Create a new habit
+- `GET /api/habits/[id]` - Get a specific habit
+- `PATCH /api/habits/[id]` - Update a habit
+- `DELETE /api/habits/[id]` - Delete a habit
+
+### Habit Completions
+- `POST /api/habits/[id]/completions` - Mark habit as complete
+- `DELETE /api/habits/[id]/completions` - Remove habit completion
+
+### Users
+- `POST /api/users` - Create a new user
+- `GET /api/users/[id]` - Get user with habits
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Node.js 18+ 
+- PostgreSQL database
+- npm or yarn
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd habit_tracker
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment variables**
+   ```bash
+   cp .env.example .env
+   ```
+   
+   Update the `.env` file with your database connection string:
+   ```
+   DATABASE_URL="postgresql://username:password@localhost:5432/habit_hero_db?schema=public"
+   ```
+
+4. **Set up the database**
+   ```bash
+   # Run database migrations
+   npm run db:migrate
+   
+   # Seed the database with sample data
+   npm run db:seed
+   ```
+
+5. **Start the development server**
+   ```bash
+   npm run dev
+   ```
+
+6. **Open the application**
+   Navigate to [http://localhost:3000](http://localhost:3000)
+
+## Available Scripts
+
+- `npm run dev` - Start development server with Turbopack
+- `npm run build` - Build the application for production
+- `npm run start` - Start the production server
+- `npm run lint` - Run ESLint
+- `npm run db:migrate` - Run Prisma migrations
+- `npm run db:seed` - Seed the database with sample data
+- `npm run db:reset` - Reset database and re-seed
+
+## Environment Variables
+
+Create a `.env` file in the root directory:
+
+```env
+# Database
+DATABASE_URL="postgresql://username:password@localhost:5432/habit_hero_db?schema=public"
+
+# Next.js
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="your-nextauth-secret-here"
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Deployment
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Vercel (Recommended)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Push your code to GitHub
+2. Connect your repository to Vercel
+3. Set up environment variables in Vercel dashboard
+4. Deploy!
 
-## Learn More
+### Other Platforms
 
-To learn more about Next.js, take a look at the following resources:
+Make sure to:
+1. Set up a PostgreSQL database
+2. Configure environment variables
+3. Run database migrations
+4. Build and deploy the application
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Contributing
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-## Deploy on Vercel
+## License
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Acknowledgments
+
+- Built with [Next.js](https://nextjs.org/)
+- Database management with [Prisma](https://prisma.io/)
+- Styled with [Tailwind CSS](https://tailwindcss.com/)
+- Icons from [Lucide](https://lucide.dev/)
