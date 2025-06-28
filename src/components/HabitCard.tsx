@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { format, isToday, startOfWeek, addDays, isSameDay } from 'date-fns'
+import { format, isToday, startOfWeek, addDays } from 'date-fns'
 import { Check, Edit2, Trash2, Calendar } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { HabitWithCompletions } from '@/types'

@@ -4,6 +4,7 @@ import { useSession, signOut } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { User, Mail, Trash2, ChevronLeft, Loader2 } from 'lucide-react'
+import type { HabitWithCompletions } from '@/types'
 
 export default function AccountPage() {
   const { data: session, status } = useSession()
@@ -31,7 +32,7 @@ export default function AccountPage() {
       const res = await fetch(`/api/users/${session.user.id}`)
       if (res.ok) {
         const user = await res.json()
-        const completions = user.habits.flatMap((h: any) => h.completions)
+        const completions = user.habits.flatMap((h: HabitWithCompletions) => h.completions)
         const totalCompletions = completions.length
         const totalHabits = user.habits.length
         setUserStats({ totalCompletions, totalHabits })
@@ -111,6 +112,7 @@ export default function AccountPage() {
             <Trash2 className="h-4 w-4" />
             {deleteConfirm ? 'Confirm Delete Account' : 'Delete Account'}
           </button>
+          {error && <div className="text-red-600 mt-2 text-sm">{error}</div>}
         </div>
       </div>
     </div>
