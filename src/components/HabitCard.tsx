@@ -21,11 +21,16 @@ export function HabitCard({ habit, onToggleCompletion, onEdit, onDelete }: Habit
   const weekStart = startOfWeek(today, { weekStartsOn: 1 }) // Monday
   const weekDates = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i))
 
-  // Check if habit is completed for a specific date
+  // Check if habit is completed for a specific date (compare by local date string)
   const isCompletedOnDate = (date: Date) => {
-    return habit.completions.some((completion: { date: string | Date }) => 
-      isSameDay(new Date(completion.date), date)
-    )
+    const target = format(date, 'yyyy-MM-dd')
+    return habit.completions.some((completion: { date: string | Date }) => {
+      // Support both string and Date
+      const compDate = typeof completion.date === 'string'
+        ? completion.date.slice(0, 10)
+        : format(completion.date, 'yyyy-MM-dd')
+      return compDate === target
+    })
   }
 
   // Calculate current streak
@@ -48,9 +53,11 @@ export function HabitCard({ habit, onToggleCompletion, onEdit, onDelete }: Habit
   const handleToggleCompletion = async (date: Date) => {
     const isCompleted = isCompletedOnDate(date)
     setIsLoading(true)
-    
     try {
-      await onToggleCompletion(habit.id, date, isCompleted)
+      // Always pass a date object at local midnight
+      const localDate = new Date(date)
+      localDate.setHours(0, 0, 0, 0)
+      await onToggleCompletion(habit.id, localDate, isCompleted)
     } finally {
       setIsLoading(false)
     }
@@ -72,13 +79,13 @@ export function HabitCard({ habit, onToggleCompletion, onEdit, onDelete }: Habit
         <div className="flex items-center gap-2 ml-4">
           <button
             onClick={() => onEdit(habit)}
-            className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+            className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors cursor-pointer"
           >
             <Edit2 className="h-4 w-4" />
           </button>
           <button
             onClick={() => onDelete(habit.id)}
-            className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
+            className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors cursor-pointer"
           >
             <Trash2 className="h-4 w-4" />
           </button>
@@ -91,7 +98,7 @@ export function HabitCard({ habit, onToggleCompletion, onEdit, onDelete }: Habit
           onClick={() => handleToggleCompletion(today)}
           disabled={isLoading}
           className={cn(
-            "flex items-center gap-2 px-4 py-2 rounded-md font-medium transition-colors",
+            "flex items-center gap-2 px-4 py-2 rounded-md font-medium transition-colors cursor-pointer",
             todayCompleted
               ? "bg-green-100 text-green-800 border border-green-300"
               : "bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200",
@@ -124,7 +131,7 @@ export function HabitCard({ habit, onToggleCompletion, onEdit, onDelete }: Habit
                 onClick={() => handleToggleCompletion(date)}
                 disabled={isLoading}
                 className={cn(
-                  "aspect-square rounded-md border-2 text-xs font-medium transition-colors relative",
+                  "aspect-square rounded-md border-2 text-xs font-medium transition-colors relative cursor-pointer",
                   completed
                     ? "bg-green-100 border-green-300 text-green-800"
                     : "bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100",

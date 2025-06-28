@@ -1,31 +1,30 @@
-'use client'
+"use client"
 
-import { useState } from 'react'
-import { Plus, X } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { useState } from "react"
+import { X, Save } from "lucide-react"
+import { cn } from "@/lib/utils"
+import type { HabitWithCompletions } from "@/types"
 
-interface CreateHabitFormProps {
+interface EditHabitFormProps {
+  habit: HabitWithCompletions
   onSubmit: (data: { title: string; description?: string }) => Promise<void>
   onCancel: () => void
 }
 
-export function CreateHabitForm({ onSubmit, onCancel }: CreateHabitFormProps) {
-  const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
+export function EditHabitForm({ habit, onSubmit, onCancel }: EditHabitFormProps) {
+  const [title, setTitle] = useState(habit.title)
+  const [description, setDescription] = useState(habit.description || "")
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!title.trim()) return
-
     setIsSubmitting(true)
     try {
       await onSubmit({
         title: title.trim(),
         description: description.trim() || undefined
       })
-      setTitle('')
-      setDescription('')
     } finally {
       setIsSubmitting(false)
     }
@@ -34,7 +33,7 @@ export function CreateHabitForm({ onSubmit, onCancel }: CreateHabitFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-lg shadow-md border">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-900">Create New Habit</h3>
+        <h3 className="text-lg font-semibold text-gray-900">Edit Habit</h3>
         <button
           type="button"
           onClick={onCancel}
@@ -43,7 +42,6 @@ export function CreateHabitForm({ onSubmit, onCancel }: CreateHabitFormProps) {
           <X className="h-5 w-5" />
         </button>
       </div>
-      
       <div>
         <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
           Habit Title *
@@ -54,11 +52,10 @@ export function CreateHabitForm({ onSubmit, onCancel }: CreateHabitFormProps) {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="e.g., Drink 8 glasses of water"
-          className="w-full px-3 py-2 border border-gray-300 text-gray-800 placeholder-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-800 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           required
         />
       </div>
-
       <div>
         <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
           Description (optional)
@@ -72,19 +69,18 @@ export function CreateHabitForm({ onSubmit, onCancel }: CreateHabitFormProps) {
           className="w-full px-3 py-2 border border-gray-300 text-gray-800 placeholder-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         />
       </div>
-
       <div className="flex gap-3">
         <button
           type="submit"
           disabled={!title.trim() || isSubmitting}
           className={cn(
             "flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-md font-medium transition-colors",
-            "bg-blue-600 disabled:text-gray-400 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500",
+            "bg-blue-600 text-white disabled:text-gray-400 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500",
             "disabled:bg-gray-300 disabled:cursor-not-allowed cursor-pointer"
           )}
         >
-          <Plus className="h-4 w-4" />
-          {isSubmitting ? 'Creating...' : 'Create Habit'}
+          <Save className="h-4 w-4" />
+          {isSubmitting ? 'Saving...' : 'Save Changes'}
         </button>
         <button
           type="button"
